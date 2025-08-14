@@ -75,21 +75,29 @@ npm run dev
 
 ## 📬 API Endpoints
 
-### **Auth Routes**
+### Auth
+- `POST /api/users/register` – Register
+- `POST /api/users/login` – Login
+- `GET /api/users/protected` – Test JWT (auth)
 
-| Method | Endpoint               | Description          | Protected |
-| ------ | ---------------------- | -------------------- | --------- |
-| POST   | `/api/users/register`  | Register a new user  | No        |
-| POST   | `/api/users/login`     | Login a user         | No        |
-| GET    | `/api/users/protected` | Test protected route | Yes       |
+### Posts
+- `POST /api/posts` – Create post (auth)
+- `GET /api/posts` – List posts (public, pagination & filtering)
+  - Query: `page`, `limit`, `author`, `tags` (comma-separated), `startDate`, `endDate`
+- `GET /api/posts/:id` – Get single post (public)
+- `PATCH /api/posts/:id` – Update post (owner or admin)
+- `DELETE /api/posts/:id` – Delete post (owner or admin)
 
-**Protected Route Header Example**
+### Comments
+- `POST /api/posts/:postId/comments` – Add comment (auth)
+- `GET /api/posts/:postId/comments` – List comments (public)
+- `DELETE /api/posts/:postId/comments/:commentId` – Delete comment (owner or admin)
 
-```
-Authorization: Bearer <your_jwt_token>
-```
-
----
+### Security
+- Helmet for HTTP headers
+- Rate limiting on `/api`
+- Input sanitization (xss-clean, express-mongo-sanitize)
+- HPP protection
 
 ## 🧪 Testing in Postman
 
