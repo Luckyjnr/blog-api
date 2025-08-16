@@ -1,5 +1,5 @@
-const Comment = require('../models/comment');
-const Post = require('../models/post');
+const Comment = require('../models/comment.js');
+const Post = require('../models/post.js');
 const { isOwnerOrAdmin } = require('../middleware/authMiddleware');
 
 // Create comment

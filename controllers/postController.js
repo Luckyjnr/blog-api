@@ -1,5 +1,5 @@
 // controllers/postController.js
-const Post = require('../models/post');
+const Post = require('../models/post.js');
 const { isOwnerOrAdmin } = require('../middleware/authMiddleware');
 
 // Validate helpers
