@@ -11,17 +11,6 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
 
-    services:
-      mongodb:
-        image: mongo:6.0
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ping: 1})'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -35,15 +24,8 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Wait for MongoDB
-      run: |
-        echo "Waiting for MongoDB to be ready..."
-        timeout 60 bash -c 'until mongosh --host localhost:27017 --eval "db.runCommand({ping: 1})" > /dev/null 2>&1; do sleep 2; done'
-        echo "MongoDB is ready!"
-      
     - name: Run tests
       run: npm test
       env:
         NODE_ENV: test
         JWT_SECRET: test-secret-key-for-testing-only
-        MONGO_URI: mongodb://localhost:27017/testdb
