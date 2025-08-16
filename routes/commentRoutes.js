@@ -1,5 +1,4 @@
 const express = require('express');
-const { protect } = require('../middleware/authMiddleware');
 const {
   addComment,
   listComments,
@@ -10,9 +9,9 @@ const router = express.Router({ mergeParams: true }); // ✅ merge postId from p
 
 router.route('/')
   .get(listComments)          // Public
-  .post(protect, addComment); // Auth
+  .post(addComment);          // No auth for now
 
 router.route('/:commentId')
-  .delete(protect, deleteComment); // Owner/admin
+  .delete(deleteComment);     // No auth for now
 
 module.exports = router;

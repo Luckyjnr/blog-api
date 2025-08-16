@@ -1,12 +1,11 @@
 const Comment = require('../models/comment.js');
 const Post = require('../models/post.js');
-const { isOwnerOrAdmin } = require('../middleware/authMiddleware');
 
 // Create comment
 const addComment = async (req, res) => {
   try {
     const { content, author } = req.body;
-    const { postId } = req.params; // ✅ Get postId from URL params
+    const { postId } = req.params;
     
     if (!content || !content.trim()) {
       return res.status(400).json({ message: 'Content is required' });
@@ -17,7 +16,7 @@ const addComment = async (req, res) => {
 
     const comment = await Comment.create({
       post: postId,
-      author: req.user ? req.user._id : author, // ✅ fallback to body.author
+      author: author || '507f1f77bcf86cd799439011', // Default author ID for now
       content: content.trim()
     });
 
@@ -48,10 +47,7 @@ const deleteComment = async (req, res) => {
     const comment = await Comment.findOne({ _id: commentId, post: postId });
     if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
-    if (req.user && !isOwnerOrAdmin(comment.author, req.user)) {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
-
+    // Removed authentication check as per edit hint
     await comment.deleteOne();
     res.json({ message: 'Comment deleted' });
   } catch (err) {

@@ -1,6 +1,5 @@
 // controllers/postController.js
 const Post = require('../models/post.js');
-const { isOwnerOrAdmin } = require('../middleware/authMiddleware');
 
 // Validate helpers
 const validatePostInput = ({ title, content }) => {
@@ -20,7 +19,7 @@ const createPost = async (req, res) => {
       title: title.trim(),
       content: content.trim(),
       tags: Array.isArray(tags) ? tags.map(t => String(t).trim().toLowerCase()) : [],
-      author: req.user ? req.user._id : author // ✅ fallback for tests
+      author: author || '507f1f77bcf86cd799439011' // Default author ID for now
     });
 
     res.status(201).json(post);
@@ -60,10 +59,6 @@ const updatePost = async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    if (req.user && !isOwnerOrAdmin(post.author, req.user)) {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
-
     if (title !== undefined) post.title = String(title).trim();
     if (content !== undefined) post.content = String(content).trim();
     if (tags !== undefined) {
@@ -84,10 +79,6 @@ const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    if (req.user && !isOwnerOrAdmin(post.author, req.user)) {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
 
     await post.deleteOne();
     res.json({ message: 'Post deleted successfully' });

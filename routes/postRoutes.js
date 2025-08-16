@@ -1,5 +1,4 @@
 const express = require('express');
-const { protect } = require('../middleware/authMiddleware');
 const {
   createPost,
   getPosts,
@@ -14,12 +13,12 @@ const router = express.Router();
 
 router.route('/')
   .get(getPosts)
-  .post(protect, createPost);
+  .post(createPost);
 
 router.route('/:id')
   .get(getPostById)
-  .patch(protect, updatePost)
-  .delete(protect, deletePost);
+  .patch(updatePost)
+  .delete(deletePost);
 
 // ✅ Mount comment routes under posts
 router.use('/:postId/comments', commentRoutes);
