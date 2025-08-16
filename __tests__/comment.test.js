@@ -1,7 +1,7 @@
 // __tests__/comment.test.js
 const request = require("supertest");
 const mongoose = require("mongoose");
-const app = require("../app");
+const app = require("../tests/testApp");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 

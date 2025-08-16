@@ -1,7 +1,7 @@
 // __tests__/post.test.js
 const request = require("supertest");
 const mongoose = require("mongoose");
-const app = require("../app");
+const app = require("../tests/testApp");
 const Post = require("../models/post");
 
 // Mock the authMiddleware
