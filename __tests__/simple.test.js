@@ -6,7 +6,7 @@ describe("Simple Import Test", () => {
       expect(User).toBeDefined();
       expect(typeof User).toBe('function');
     } catch (error) {
-      fail(`Failed to import user model: ${error.message}`);
+      throw new Error(`Failed to import user model: ${error.message}`);
     }
   });
 
@@ -16,7 +16,7 @@ describe("Simple Import Test", () => {
       expect(Post).toBeDefined();
       expect(typeof Post).toBe('function');
     } catch (error) {
-      fail(`Failed to import post model: ${error.message}`);
+      throw new Error(`Failed to import post model: ${error.message}`);
     }
   });
 });
