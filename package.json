@@ -7,9 +7,10 @@
     "dev": "nodemon server.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-  "test": "jest --runInBand"
-},
-"keywords": [],
+    "format:check": "prettier --check .",
+    "test": "jest --runInBand"
+  },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",

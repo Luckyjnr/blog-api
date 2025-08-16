@@ -1,29 +1,38 @@
-name: Node.js CI
+name: Run Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop", "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "develop", "master" ]
 
 jobs:
-  build:
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
 
     services:
-      mongo:
+      mongodb:
         image: mongo:6.0
         ports:
           - 27017:27017
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js
-      uses: actions/setup-node@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        node-version: 18
-    - run: npm install
-    - run: npm test
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: npm test
       env:
-        MONGO_URI_TEST: mongodb://localhost:27017/testdb
-        JWT_SECRET: testsecret
+        NODE_ENV: test
+        JWT_SECRET: test-secret-key-for-testing-only
+        MONGO_URI: mongodb://localhost:27017/testdb
