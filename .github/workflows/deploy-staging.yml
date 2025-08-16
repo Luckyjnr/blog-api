@@ -1,0 +1,73 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+
+env:
+  NODE_ENV: staging
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm test
+      env:
+        NODE_ENV: test
+        JWT_SECRET: test-secret-key-for-testing-only
+        MONGO_URI: mongodb://localhost:27017/testdb
+
+    - name: Build application
+      run: npm run build
+      env:
+        NODE_ENV: staging
+
+    - name: Deploy to staging server
+      run: |
+        echo "Deploying to staging environment..."
+        # Add your deployment commands here
+        # Examples:
+        # - rsync to server
+        # - Docker build and push
+        # - Cloud deployment (AWS, Azure, GCP)
+        # - Platform-specific deployment (Heroku, Vercel, etc.)
+        
+    - name: Health check
+      run: |
+        echo "Performing health check..."
+        # Add health check commands
+        # curl -f http://staging.yourdomain.com/health || exit 1
+
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Deployment to staging successful"
+        else
+          echo "❌ Deployment to staging failed"
+        fi 

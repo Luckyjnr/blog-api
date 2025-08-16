@@ -1,0 +1,93 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+      confirm:
+        description: 'Type "YES" to confirm production deployment'
+        required: true
+        type: string
+
+env:
+  NODE_ENV: production
+
+jobs:
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+    
+    # Prevent accidental deployments
+    if: github.event.inputs.confirm == 'YES' || github.event_name == 'release'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run full test suite
+      run: npm test
+      env:
+        NODE_ENV: test
+        JWT_SECRET: test-secret-key-for-testing-only
+        MONGO_URI: mongodb://localhost:27017/testdb
+
+    - name: Security audit
+      run: npm audit --audit-level=high
+
+    - name: Build application
+      run: npm run build
+      env:
+        NODE_ENV: production
+
+    - name: Deploy to production
+      run: |
+        echo "🚀 Deploying to production environment..."
+        echo "Release: ${{ github.event.release.tag_name }}"
+        echo "Commit: ${{ github.sha }}"
+        
+        # Add your production deployment commands here
+        # Examples:
+        # - Docker build and push to registry
+        # - Kubernetes deployment
+        # - Cloud deployment (AWS, Azure, GCP)
+        # - Platform-specific deployment
+        
+    - name: Production health check
+      run: |
+        echo "🏥 Performing production health check..."
+        # Add production health check commands
+        # curl -f https://yourdomain.com/health || exit 1
+        
+    - name: Rollback preparation
+      run: |
+        echo "📋 Preparing rollback plan..."
+        # Store current deployment info for potential rollback
+        
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Production deployment successful"
+          echo "🌐 Application is live at: https://yourdomain.com"
+        else
+          echo "❌ Production deployment failed"
+          echo "🔄 Consider rolling back to previous version"
+        fi 

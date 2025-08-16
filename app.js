@@ -1,3 +1,4 @@
+// app.js
 const express = require('express');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
@@ -7,30 +8,32 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 
 dotenv.config();
-connectDB();
+
+// ✅ Only connect to DB if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
 
 const app = express();
 
-// Body parser
+// Middlewares
 app.use(express.json({ limit: '10kb' }));
-
-// Security middleware
 app.use(helmet());
 app.use(hpp());
 app.use(cors());
 
-// Rate limit
+// Rate limiter
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 300,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
 app.use('/api', limiter);
 
 // Routes
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
-app.use('/api/comments', require('./routes/commentRoutes')); // moved out from /posts
+app.use('/api/comments', require('./routes/commentRoutes'));
 
-module.exports = app;
+module.exports = app; // ✅ Export only app (for tests)

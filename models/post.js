@@ -5,7 +5,8 @@ const postSchema = new mongoose.Schema(
     title: { type: String, required: [true, 'Title is required'], trim: true },
     content: { type: String, required: [true, 'Content is required'] },
     tags: [{ type: String, trim: true, lowercase: true }],
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    tagsText: { type: String } // ✅ ensure schema has this field
   },
   { timestamps: true }
 );
@@ -24,4 +25,5 @@ postSchema.index({ title: 'text', content: 'text', tagsText: 'text' });
 // ✅ Optional sort index for performance
 postSchema.index({ author: 1, createdAt: -1 });
 
-module.exports = mongoose.model('Post', postSchema);
+// ✅ Prevent OverwriteModelError in Jest
+module.exports = mongoose.models.Post || mongoose.model('Post', postSchema);
